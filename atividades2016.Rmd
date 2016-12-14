@@ -1,0 +1,52 @@
+---
+title: "Atividades 2016"
+author: "Julio Trecenti"
+date: "December 9, 2016"
+output: html_document
+---
+
+# SENASP
+
+# CNJ - maiores litigantes
+
+# Curso de Jurimetria
+
+# Estudo sobre varas especializadas
+
+# Estudo sobre desaparecidos
+
+# CEA e orientações
+
+# Condenados por improbidade administrativa
+
+# Outros trabalhos
+
+- recebimento de pesquisadores
+- 
+
+# Reuniões realizadas
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(lubridate)
+
+l <- read_lines('~/Downloads/jtrecenti@abjur.org.br.txt')
+padroes <- 'Start|End|Organizer|Attendees|Summary'
+m <- str_match(l, sprintf('(%s):[[:space:]]+(.+)$', padroes)) %>% 
+  as_tibble() %>% 
+  select(key = V2, value = V3) %>% 
+  filter(!is.na(key)) %>% 
+  group_by(key) %>% 
+  mutate(id = 1:n()) %>% 
+  ungroup() %>% 
+  spread(key, value) %>% 
+  janitor::clean_names() %>% 
+  mutate_at(vars(start, end), 
+            funs(str_match(., '([0-9]{4}-[0-9]{2}-[0-9]{2})')[, 2]))
+
+m %>% 
+  filter(year(start) == 2016) %>% 
+  View()
+```
+
